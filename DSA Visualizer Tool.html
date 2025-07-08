@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Visualizer Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            padding-bottom: 100px; /* Increased to accommodate new footer content */
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tab-btn {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50px;
+            color: var(--light);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .visualization-container {
+            background: rgba(30, 30, 50, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            min-height: 500px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .controls {
+            background: rgba(40, 40, 60, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        label {
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        select, input, button {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        button {
+            background: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .tree-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+        
+        .sorting-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 350px;
+            gap: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .bar {
+            background: var(--accent);
+            width: 30px;
+            border-radius: 5px 5px 0 0;
+            transition: height 0.3s, background 0.3s;
+        }
+        
+        .graph-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+        
+        .node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .node:hover {
+            transform: scale(1.1);
+            background: var(--success);
+        }
+        
+        .edge {
+            position: absolute;
+            height: 4px;
+            background: var(--accent);
+            transform-origin: 0 0;
+            z-index: 5;
+        }
+        
+        .edge-weight {
+            position: absolute;
+            background: rgba(30, 30, 50, 0.9);
+            color: var(--light);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            z-index: 7;
+        }
+        
+        .explanation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+            z-index: 20;
+        }
+        
+        .explanation h3 {
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+        
+        .explanation p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .current {
+            background: #f72585 !important;
+        }
+        
+        .visited {
+            background: #4cc9f0 !important;
+        }
+        
+        .path {
+            background: #2ec4b6 !important;
+        }
+        
+        .heap {
+            background: #ff9f1c !important;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .visualization-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            position: relative;
+            z-index: 20;
+        }
+        
+        footer {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            z-index: 100;
+        }
+        
+        .author-highlight {
+            background: linear-gradient(90deg, #ff9f1c, #ff4d6d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 3px 8px;
+            border-radius: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px rgba(255, 159, 28, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 77, 109, 0.8); }
+            100% { text-shadow: 0 0 5px rgba(255, 159, 28, 0.5); }
+        }
+        
+        .signature {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Added LinkedIn link styling */
+        .linkedin-link {
+            display: block;
+            margin-top: 10px;
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .linkedin-link:hover {
+            color: var(--success);
+            text-decoration: underline;
+        }
+        
+        .watermark {
+            position: absolute;
+            bottom: 60px;
+            right: 30px;
+            opacity: 0.1;
+            font-size: 10rem;
+            font-weight: bold;
+            transform: rotate(-20deg);
+            color: var(--success);
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="watermark">DSA</div>
+        
+        <header>
+            <h1><i class="fas fa-project-diagram"></i> Data Structures & Algorithms Visualizer</h1>
+            <p class="subtitle">An interactive visualization tool that demonstrates complex algorithms through intuitive animations and step-by-step explanations. Perfect for learning and understanding core DSA concepts.</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tree">
+                <i class="fas fa-tree"></i> Binary Tree Traversal
+            </button>
+            <button class="tab-btn" data-tab="sorting">
+                <i class="fas fa-sort-amount-down"></i> Sorting Algorithms
+            </button>
+            <button class="tab-btn" data-tab="dijkstra">
+                <i class="fas fa-route"></i> Dijkstra's Algorithm
+            </button>
+            <button class="tab-btn" data-tab="recursion">
+                <i class="fas fa-sitemap"></i> Recursion Stack
+            </button>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="algorithm"><i class="fas fa-code"></i> Algorithm:</label>
+                <select id="algorithm">
+                    <option value="preorder">Preorder Traversal</option>
+                    <option value="inorder">Inorder Traversal</option>
+                    <option value="postorder">Postorder Traversal</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="speed"><i class="fas fa-tachometer-alt"></i> Speed:</label>
+                <input type="range" id="speed" min="1" max="10" value="5">
+            </div>
+            
+            <button id="generate">
+                <i class="fas fa-sync-alt"></i> Generate New
+            </button>
+            <button id="start">
+                <i class="fas fa-play"></i> Start Visualization
+            </button>
+            <button id="pause">
+                <i class="fas fa-pause"></i> Pause
+            </button>
+            <button id="reset">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+        
+        <div class="visualization-container">
+            <h2 class="visualization-title">
+                <i class="fas fa-tree"></i> Binary Tree Traversal Visualization
+            </h2>
+            
+            <div class="canvas-container">
+                <div class="tree-container" id="treeCanvas"></div>
+            </div>
+            
+            <div class="explanation">
+                <h3><i class="fas fa-lightbulb"></i> Algorithm Explanation</h3>
+                <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once. The three common traversal methods are:</p>
+                
+                <div class="code-snippet">
+                    // Preorder: Root → Left → Right<br>
+                    function preorder(node) {<br>
+                    &nbsp;&nbsp;if (node == null) return;<br>
+                    &nbsp;&nbsp;visit(node);<br>
+                    &nbsp;&nbsp;preorder(node.left);<br>
+                    &nbsp;&nbsp;preorder(node.right);<br>
+                    }
+                </div>
+                
+                <div class="code-snippet">
+                    // Inorder: Left → Root → Right<br>
+                    function inorder(node) {<br>
+                    &nbsp;&nbsp;if (node == null) return;<br>
+                    &nbsp;&nbsp;inorder(node.left);<br>
+                    &nbsp;&nbsp;visit(node);<br>
+                    &nbsp;&nbsp;inorder(node.right);<br>
+                    }
+                </div>
+                
+                <div class="code-snippet">
+                    // Postorder: Left → Right → Root<br>
+                    function postorder(node) {<br>
+                    &nbsp;&nbsp;if (node == null) return;<br>
+                    &nbsp;&nbsp;postorder(node.left);<br>
+                    &nbsp;&nbsp;postorder(node.right);<br>
+                    &nbsp;&nbsp;visit(node);<br>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4361ee;"></div>
+                <span>Normal Node</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color current"></div>
+                <span>Current Node</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color visited"></div>
+                <span>Visited Node</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color path"></div>
+                <span>Path Node</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color heap"></div>
+                <span>Heap Node</span>
+            </div>
+        </div>
+        
+        <footer>
+            <div>
+                <p>Designed and developed with <i class="fas fa-heart" style="color: #ff4d6d;"></i></p>
+                <div class="signature">
+                    <i class="fas fa-user"></i>
+                    <span>Made by <span class="author-highlight">Prakhar</span> in May 2025</span>
+                </div>
+                <!-- Added LinkedIn link here -->
+                <a href="https://www.linkedin.com/in/prakhar-pandey-56267a2a2/" target="_blank" class="linkedin-link">
+                    <i class="fab fa-linkedin"></i> Connect with me on LinkedIn
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const tab = btn.getAttribute('data-tab');
+                updateVisualization(tab);
+            });
+        });
+        
+        function updateVisualization(tab) {
+            const title = document.querySelector('.visualization-title');
+            const explanation = document.querySelector('.explanation');
+            
+            switch(tab) {
+                case 'tree':
+                    title.innerHTML = '<i class="fas fa-tree"></i> Binary Tree Traversal Visualization';
+                    explanation.innerHTML = `
+                        <h3><i class="fas fa-lightbulb"></i> Algorithm Explanation</h3>
+                        <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once. The three common traversal methods are:</p>
+                        
+                        <div class="code-snippet">
+                            // Preorder: Root → Left → Right<br>
+                            function preorder(node) {<br>
+                            &nbsp;&nbsp;if (node == null) return;<br>
+                            &nbsp;&nbsp;visit(node);<br>
+                            &nbsp;&nbsp;preorder(node.left);<br>
+                            &nbsp;&nbsp;preorder(node.right);<br>
+                            }
+                        </div>
+                        
+                        <div class="code-snippet">
+                            // Inorder: Left → Root → Right<br>
+                            function inorder(node) {<br>
+                            &nbsp;&nbsp;if (node == null) return;<br>
+                            &nbsp;&nbsp;inorder(node.left);<br>
+                            &nbsp;&nbsp;visit(node);<br>
+                            &nbsp;&nbsp;inorder(node.right);<br>
+                            }
+                        </div>
+                        
+                        <div class="code-snippet">
+                            // Postorder: Left → Right → Root<br>
+                            function postorder(node) {<br>
+                            &nbsp;&nbsp;if (node == null) return;<br>
+                            &nbsp;&nbsp;postorder(node.left);<br>
+                            &nbsp;&nbsp;postorder(node.right);<br>
+                            &nbsp;&nbsp;visit(node);<br>
+                            }
+                        </div>
+                    `;
+                    break;
+                    
+                case 'sorting':
+                    title.innerHTML = '<i class="fas fa-sort-amount-down"></i> Sorting Algorithms Visualization';
+                    explanation.innerHTML = `
+                        <h3><i class="fas fa-lightbulb"></i> Sorting Algorithms Explained</h3>
+                        <p><strong>Sorting algorithms</strong> arrange elements of a list in a particular order. Common algorithms include:</p>
+                        
+                        <p><strong>Bubble Sort:</strong> Repeatedly steps through the list, compares adjacent elements and swaps them if in wrong order.</p>
+                        <p><strong>Selection Sort:</strong> Divides input into sorted and unsorted portions, then finds the smallest element in unsorted portion and moves it to sorted portion.</p>
+                        <p><strong>Insertion Sort:</strong> Builds the final sorted array one item at a time by comparisons.</p>
+                        <p><strong>Merge Sort:</strong> A divide and conquer algorithm that divides input array into two halves, sorts them, and then merges.</p>
+                        <p><strong>Quick Sort:</strong> Picks an element as pivot and partitions the array around the pivot.</p>
+                    `;
+                    break;
+                    
+                case 'dijkstra':
+                    title.innerHTML = '<i class="fas fa-route"></i> Dijkstra\'s Algorithm Visualization';
+                    explanation.innerHTML = `
+                        <h3><i class="fas fa-lightbulb"></i> Dijkstra's Algorithm Explained</h3>
+                        <p><strong>Dijkstra's algorithm</strong> finds the shortest path between nodes in a graph with non-negative edge weights.</p>
+                        
+                        <div class="code-snippet">
+                            function dijkstra(graph, start) {<br>
+                            &nbsp;&nbsp;let distances = {};<br>
+                            &nbsp;&nbsp;let pq = new PriorityQueue();<br>
+                            &nbsp;&nbsp;<br>
+                            &nbsp;&nbsp;// Initialize distances<br>
+                            &nbsp;&nbsp;for (let node in graph) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;distances[node] = Infinity;<br>
+                            &nbsp;&nbsp;}<br>
+                            &nbsp;&nbsp;distances[start] = 0;<br>
+                            &nbsp;&nbsp;pq.enqueue(start, 0);<br>
+                            &nbsp;&nbsp;<br>
+                            &nbsp;&nbsp;while (!pq.isEmpty()) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;let minNode = pq.dequeue();<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;let currNode = minNode.element;<br>
+                            &nbsp;&nbsp;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;for (let neighbor in graph[currNode]) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let alt = distances[currNode] + graph[currNode][neighbor];<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (alt < distances[neighbor]) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distances[neighbor] = alt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pq.enqueue(neighbor, alt);<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                            &nbsp;&nbsp;}<br>
+                            &nbsp;&nbsp;return distances;<br>
+                            }
+                        </div>
+                    `;
+                    break;
+                    
+                case 'recursion':
+                    title.innerHTML = '<i class="fas fa-sitemap"></i> Recursion Stack Visualization';
+                    explanation.innerHTML = `
+                        <h3><i class="fas fa-lightbulb"></i> Understanding Recursion</h3>
+                        <p><strong>Recursion</strong> is a programming technique where a function calls itself to solve smaller instances of the same problem.</p>
+                        
+                        <p>Key components of recursion:</p>
+                        <ul>
+                            <li><strong>Base Case:</strong> The condition that stops the recursion</li>
+                            <li><strong>Recursive Case:</strong> Where the function calls itself</li>
+                            <li><strong>Call Stack:</strong> The stack data structure that manages function calls</li>
+                        </ul>
+                        
+                        <div class="code-snippet">
+                            function factorial(n) {<br>
+                            &nbsp;&nbsp;// Base case<br>
+                            &nbsp;&nbsp;if (n === 0) {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;return 1;<br>
+                            &nbsp;&nbsp;}<br>
+                            &nbsp;&nbsp;// Recursive case<br>
+                            &nbsp;&nbsp;return n * factorial(n - 1);<br>
+                            }
+                        </div>
+                        
+                        <p>Each recursive call adds a new frame to the call stack until the base case is reached, then the stack unwinds as each call returns its result.</p>
+                    `;
+                    break;
+            }
+        }
+        
+        // Binary Tree Visualization
+        class TreeNode {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+            }
+        }
+        
+        class BinaryTree {
+            constructor() {
+                this.root = null;
+            }
+            
+            createRandomTree() {
+                this.root = new TreeNode(Math.floor(Math.random() * 100));
+                
+                // Helper function to add children
+                const addChildren = (node, depth) => {
+                    if (depth > 0) {
+                        if (Math.random() > 0.3) {
+                            node.left = new TreeNode(Math.floor(Math.random() * 100));
+                            addChildren(node.left, depth - 1);
+                        }
+                        if (Math.random() > 0.3) {
+                            node.right = new TreeNode(Math.floor(Math.random() * 100));
+                            addChildren(node.right, depth - 1);
+                        }
+                    }
+                };
+                
+                addChildren(this.root, 4);
+                return this.root;
+            }
+            
+            preorderTraversal(node, callback) {
+                if (node !== null) {
+                    callback(node);
+                    this.preorderTraversal(node.left, callback);
+                    this.preorderTraversal(node.right, callback);
+                }
+            }
+            
+            inorderTraversal(node, callback) {
+                if (node !== null) {
+                    this.inorderTraversal(node.left, callback);
+                    callback(node);
+                    this.inorderTraversal(node.right, callback);
+                }
+            }
+            
+            postorderTraversal(node, callback) {
+                if (node !== null) {
+                    this.postorderTraversal(node.left, callback);
+                    this.postorderTraversal(node.right, callback);
+                    callback(node);
+                }
+            }
+        }
+        
+        // Tree drawing functions
+        function drawTree(tree) {
+            const container = document.getElementById('treeCanvas');
+            container.innerHTML = '';
+            
+            // Calculate node positions
+            const positions = calculateNodePositions(tree.root);
+            
+            // Draw edges first (so they are behind nodes)
+            positions.forEach(node => {
+                if (node.parent) {
+                    drawEdge(container, node, node.parent);
+                }
+            });
+            
+            // Draw nodes
+            positions.forEach(node => {
+                drawNode(container, node);
+            });
+        }
+        
+        function calculateNodePositions(root) {
+            if (!root) return [];
+            
+            const positions = [];
+            const queue = [{node: root, x: 500, y: 50, level: 0, parent: null}];
+            
+            while (queue.length > 0) {
+                const {node, x, y, level, parent} = queue.shift();
+                positions.push({
+                    id: node.value,
+                    x,
+                    y,
+                    level,
+                    nodeRef: node,
+                    parent: parent ? {x: parent.x, y: parent.y, id: parent.id} : null
+                });
+                
+                if (node.left) {
+                    const leftX = x - 200 / (level + 1);
+                    queue.push({
+                        node: node.left,
+                        x: leftX,
+                        y: y + 100,
+                        level: level + 1,
+                        parent: {x, y, id: node.value}
+                    });
+                }
+                
+                if (node.right) {
+                    const rightX = x + 200 / (level + 1);
+                    queue.push({
+                        node: node.right,
+                        x: rightX,
+                        y: y + 100,
+                        level: level + 1,
+                        parent: {x, y, id: node.value}
+                    });
+                }
+            }
+            
+            return positions;
+        }
+        
+        function drawNode(container, node) {
+            const el = document.createElement('div');
+            el.className = 'node';
+            el.textContent = node.id;
+            el.style.left = `${node.x - 25}px`;
+            el.style.top = `${node.y - 25}px`;
+            container.appendChild(el);
+            return el;
+        }
+        
+        function drawEdge(container, node, parent) {
+            // Calculate line between parent and child
+            const length = Math.sqrt(Math.pow(node.x - parent.x, 2) + Math.pow(node.y - parent.y, 2));
+            const angle = Math.atan2(node.y - parent.y, node.x - parent.x) * 180 / Math.PI;
+            
+            const edge = document.createElement('div');
+            edge.className = 'edge';
+            edge.style.width = `${length}px`;
+            edge.style.left = `${parent.x}px`;
+            edge.style.top = `${parent.y}px`;
+            edge.style.transform = `rotate(${angle}deg)`;
+            container.appendChild(edge);
+        }
+        
+        // Initialize tree
+        const tree = new BinaryTree();
+        tree.createRandomTree();
+        drawTree(tree);
+        
+        // Event listeners for buttons
+        document.getElementById('generate').addEventListener('click', () => {
+            tree.createRandomTree();
+            drawTree(tree);
+        });
+        
+        document.getElementById('start').addEventListener('click', () => {
+            const algorithm = document.getElementById('algorithm').value;
+            visualizeTraversal(algorithm);
+        });
+        
+        // Visualization function
+        function visualizeTraversal(algorithm) {
+            const nodes = document.querySelectorAll('.node');
+            
+            // Reset all nodes
+            nodes.forEach(node => {
+                node.style.background = '';
+            });
+            
+            let traversal = [];
+            
+            switch(algorithm) {
+                case 'preorder':
+                    tree.preorderTraversal(tree.root, node => traversal.push(node.value));
+                    break;
+                case 'inorder':
+                    tree.inorderTraversal(tree.root, node => traversal.push(node.value));
+                    break;
+                case 'postorder':
+                    tree.postorderTraversal(tree.root, node => traversal.push(node.value));
+                    break;
+            }
+            
+            // Animate traversal
+            let i = 0;
+            const speed = document.getElementById('speed').value;
+            const interval = setInterval(() => {
+                if (i >= traversal.length) {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                // Highlight current node
+                nodes.forEach(node => {
+                    if (parseInt(node.textContent) === traversal[i]) {
+                        node.style.background = '#f72585';
+                        node.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            node.style.transform = 'scale(1)';
+                            node.style.background = '#4cc9f0';
+                        }, 500);
+                    }
+                });
+                
+                i++;
+            }, 1000 - (speed * 80));
+        }
+        
+        // Initialize sorting visualization
+        function initSortingVisualization() {
+            const container = document.querySelector('.sorting-container');
+            container.innerHTML = '';
+            
+            // Generate random array
+            const array = [];
+            for (let i = 0; i < 15; i++) {
+                array.push(Math.floor(Math.random() * 250) + 20);
+            }
+            
+            // Create bars
+            array.forEach(value => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${value}px`;
+                container.appendChild(bar);
+            });
+        }
+        
+        // Initialize on page load
+        initSortingVisualization();
+    </script>
+</body>
+</html>
