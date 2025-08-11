@@ -1,0 +1,383 @@
+// Tab switching functionality
+const tabBtns = document.querySelectorAll('.tab-btn');
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const tab = btn.getAttribute('data-tab');
+        updateVisualization(tab);
+    });
+});
+
+function updateVisualization(tab) {
+    const title = document.querySelector('.visualization-title');
+    const explanation = document.querySelector('.explanation');
+    
+    switch(tab) {
+        case 'tree':
+            title.innerHTML = '<i class="fas fa-tree"></i> Binary Tree Traversal Visualization';
+            explanation.innerHTML = `
+                <h3><i class="fas fa-lightbulb"></i> Algorithm Explanation</h3>
+                <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once. The three common traversal methods are:</p>
+                
+                <div class="code-snippet">
+                    // Preorder: Root → Left → Right<br>
+                    function preorder(node) {<br>
+                    &nbsp;&nbsp;if (node == null) return;<br>
+                    &nbsp;&nbsp;visit(node);<br>
+                    &nbsp;&nbsp;preorder(node.left);<br>
+                    &nbsp;&nbsp;preorder(node.right);<br>
+                    }
+                </div>
+                
+                <div class="code-snippet">
+                    // Inorder: Left → Root → Right<br>
+                    function inorder(node) {<br>
+                    &nbsp;&nbsp;if (node == null) return;<br>
+                    &nbsp;&nbsp;inorder(node.left);<br>
+                    &nbsp;&nbsp;visit(node);<br>
+                    &nbsp;&nbsp;inorder(node.right);<br>
+                    }
+                </div>
+                
+                <div class="code-snippet">
+                    // Postorder: Left → Right → Root<br>
+                    function postorder(node) {<br>
+                    &nbsp;&nbsp;if (node == null) return;<br>
+                    &nbsp;&nbsp;postorder(node.left);<br>
+                    &nbsp;&nbsp;postorder(node.right);<br>
+                    &nbsp;&nbsp;visit(node);<br>
+                    }
+                </div>
+            `;
+            break;
+            
+        case 'sorting':
+            title.innerHTML = '<i class="fas fa-sort-amount-down"></i> Sorting Algorithms Visualization';
+            explanation.innerHTML = `
+                <h3><i class="fas fa-lightbulb"></i> Sorting Algorithms Explained</h3>
+                <p><strong>Sorting algorithms</strong> arrange elements of a list in a particular order. Common algorithms include:</p>
+                
+                <p><strong>Bubble Sort:</strong> Repeatedly steps through the list, compares adjacent elements and swaps them if in wrong order.</p>
+                <p><strong>Selection Sort:</strong> Divides input into sorted and unsorted portions, then finds the smallest element in unsorted portion and moves it to sorted portion.</p>
+                <p><strong>Insertion Sort:</strong> Builds the final sorted array one item at a time by comparisons.</p>
+                <p><strong>Merge Sort:</strong> A divide and conquer algorithm that divides input array into two halves, sorts them, and then merges.</p>
+                <p><strong>Quick Sort:</strong> Picks an element as pivot and partitions the array around the pivot.</p>
+            `;
+            break;
+            
+        case 'dijkstra':
+            title.innerHTML = '<i class="fas fa-route"></i> Dijkstra\'s Algorithm Visualization';
+            explanation.innerHTML = `
+                <h3><i class="fas fa-lightbulb"></i> Dijkstra's Algorithm Explained</h3>
+                <p><strong>Dijkstra's algorithm</strong> finds the shortest path between nodes in a graph with non-negative edge weights.</p>
+                
+                <div class="code-snippet">
+                    function dijkstra(graph, start) {<br>
+                    &nbsp;&nbsp;let distances = {};<br>
+                    &nbsp;&nbsp;let pq = new PriorityQueue();<br>
+                    &nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;// Initialize distances<br>
+                    &nbsp;&nbsp;for (let node in graph) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;distances[node] = Infinity;<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;distances[start] = 0;<br>
+                    &nbsp;&nbsp;pq.enqueue(start, 0);<br>
+                    &nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;while (!pq.isEmpty()) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;let minNode = pq.dequeue();<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;let currNode = minNode.element;<br>
+                    &nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for (let neighbor in graph[currNode]) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let alt = distances[currNode] + graph[currNode][neighbor];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (alt < distances[neighbor]) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distances[neighbor] = alt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pq.enqueue(neighbor, alt);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;return distances;<br>
+                    }
+                </div>
+            `;
+            break;
+            
+        case 'recursion':
+            title.innerHTML = '<i class="fas fa-sitemap"></i> Recursion Stack Visualization';
+            explanation.innerHTML = `
+                <h3><i class="fas fa-lightbulb"></i> Understanding Recursion</h3>
+                <p><strong>Recursion</strong> is a programming technique where a function calls itself to solve smaller instances of the same problem.</p>
+                
+                <p>Key components of recursion:</p>
+                <ul>
+                    <li><strong>Base Case:</strong> The condition that stops the recursion</li>
+                    <li><strong>Recursive Case:</strong> Where the function calls itself</li>
+                    <li><strong>Call Stack:</strong> The stack data structure that manages function calls</li>
+                </ul>
+                
+                <div class="code-snippet">
+                    function factorial(n) {<br>
+                    &nbsp;&nbsp;// Base case<br>
+                    &nbsp;&nbsp;if (n === 0) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return 1;<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;// Recursive case<br>
+                    &nbsp;&nbsp;return n * factorial(n - 1);<br>
+                    }
+                </div>
+                
+                <p>Each recursive call adds a new frame to the call stack until the base case is reached, then the stack unwinds as each call returns its result.</p>
+            `;
+            break;
+    }
+}
+
+// Binary Tree Visualization
+class TreeNode {
+    constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class BinaryTree {
+    constructor() {
+        this.root = null;
+    }
+    
+    createRandomTree() {
+        this.root = new TreeNode(Math.floor(Math.random() * 100));
+        
+        // Helper function to add children
+        const addChildren = (node, depth) => {
+            if (depth > 0) {
+                if (Math.random() > 0.3) {
+                    node.left = new TreeNode(Math.floor(Math.random() * 100));
+                    addChildren(node.left, depth - 1);
+                }
+                if (Math.random() > 0.3) {
+                    node.right = new TreeNode(Math.floor(Math.random() * 100));
+                    addChildren(node.right, depth - 1);
+                }
+            }
+        };
+        
+        addChildren(this.root, 4);
+        return this.root;
+    }
+    
+    preorderTraversal(node, callback) {
+        if (node !== null) {
+            callback(node);
+            this.preorderTraversal(node.left, callback);
+            this.preorderTraversal(node.right, callback);
+        }
+    }
+    
+    inorderTraversal(node, callback) {
+        if (node !== null) {
+            this.inorderTraversal(node.left, callback);
+            callback(node);
+            this.inorderTraversal(node.right, callback);
+        }
+    }
+    
+    postorderTraversal(node, callback) {
+        if (node !== null) {
+            this.postorderTraversal(node.left, callback);
+            this.postorderTraversal(node.right, callback);
+            callback(node);
+        }
+    }
+}
+
+// Tree drawing functions
+function drawTree(tree) {
+    const container = document.getElementById('treeCanvas');
+    container.innerHTML = '';
+    
+    // Calculate node positions
+    const positions = calculateNodePositions(tree.root);
+    
+    // Draw edges first (so they are behind nodes)
+    positions.forEach(node => {
+        if (node.parent) {
+            drawEdge(container, node, node.parent);
+        }
+    });
+    
+    // Draw nodes
+    positions.forEach(node => {
+        drawNode(container, node);
+    });
+}
+
+function calculateNodePositions(root) {
+    if (!root) return [];
+    
+    const positions = [];
+    const queue = [{node: root, x: 500, y: 50, level: 0, parent: null}];
+    
+    while (queue.length > 0) {
+        const {node, x, y, level, parent} = queue.shift();
+        positions.push({
+            id: node.value,
+            x,
+            y,
+            level,
+            nodeRef: node,
+            parent: parent ? {x: parent.x, y: parent.y, id: parent.id} : null
+        });
+        
+        if (node.left) {
+            const leftX = x - 200 / (level + 1);
+            queue.push({
+                node: node.left,
+                x: leftX,
+                y: y + 100,
+                level: level + 1,
+                parent: {x, y, id: node.value}
+            });
+        }
+        
+        if (node.right) {
+            const rightX = x + 200 / (level + 1);
+            queue.push({
+                node: node.right,
+                x: rightX,
+                y: y + 100,
+                level: level + 1,
+                parent: {x, y, id: node.value}
+            });
+        }
+    }
+    
+    return positions;
+}
+
+function drawNode(container, node) {
+    const el = document.createElement('div');
+    el.className = 'node';
+    el.textContent = node.id;
+    el.style.left = `${node.x - 25}px`;
+    el.style.top = `${node.y - 25}px`;
+    container.appendChild(el);
+    return el;
+}
+
+function drawEdge(container, node, parent) {
+    // Calculate line between parent and child
+    const length = Math.sqrt(Math.pow(node.x - parent.x, 2) + Math.pow(node.y - parent.y, 2));
+    const angle = Math.atan2(node.y - parent.y, node.x - parent.x) * 180 / Math.PI;
+    
+    const edge = document.createElement('div');
+    edge.className = 'edge';
+    edge.style.width = `${length}px`;
+    edge.style.left = `${parent.x}px`;
+    edge.style.top = `${parent.y}px`;
+    edge.style.transform = `rotate(${angle}deg)`;
+    container.appendChild(edge);
+}
+
+// Initialize tree
+const tree = new BinaryTree();
+tree.createRandomTree();
+drawTree(tree);
+
+// Event listeners for buttons
+document.getElementById('generate').addEventListener('click', () => {
+    tree.createRandomTree();
+    drawTree(tree);
+});
+
+document.getElementById('start').addEventListener('click', () => {
+    const algorithm = document.getElementById('algorithm').value;
+    visualizeTraversal(algorithm);
+});
+
+// Visualization function
+function visualizeTraversal(algorithm) {
+    const nodes = document.querySelectorAll('.node');
+    
+    // Reset all nodes
+    nodes.forEach(node => {
+        node.style.background = '';
+    });
+    
+    let traversal = [];
+    
+    switch(algorithm) {
+        case 'preorder':
+            tree.preorderTraversal(tree.root, node => traversal.push(node.value));
+            break;
+        case 'inorder':
+            tree.inorderTraversal(tree.root, node => traversal.push(node.value));
+            break;
+        case 'postorder':
+            tree.postorderTraversal(tree.root, node => traversal.push(node.value));
+            break;
+    }
+    
+    // Animate traversal
+    let i = 0;
+    const speed = document.getElementById('speed').value;
+    const interval = setInterval(() => {
+        if (i >= traversal.length) {
+            clearInterval(interval);
+            return;
+        }
+        
+        // Highlight current node
+        nodes.forEach(node => {
+            if (parseInt(node.textContent) === traversal[i]) {
+                node.style.background = '#f72585';
+                node.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    node.style.transform = 'scale(1)';
+                    node.style.background = '#4cc9f0';
+                }, 500);
+            }
+        });
+        
+        i++;
+    }, 1000 - (speed * 80));
+}
+
+// Initialize sorting visualization
+function initSortingVisualization() {
+    const container = document.querySelector('.sorting-container');
+    container.innerHTML = '';
+    
+    // Generate random array
+    const array = [];
+    for (let i = 0; i < 15; i++) {
+        array.push(Math.floor(Math.random() * 250) + 20);
+    }
+    
+    // Create bars
+    array.forEach(value => {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = `${value}px`;
+        container.appendChild(bar);
+    });
+}
+
+// Initialize on page load
+initSortingVisualization();
+
+// Pause button functionality (placeholder)
+document.getElementById('pause').addEventListener('click', () => {
+    alert('Visualization paused');
+});
+
+// Reset button functionality
+document.getElementById('reset').addEventListener('click', () => {
+    const nodes = document.querySelectorAll('.node');
+    nodes.forEach(node => {
+        node.style.background = '';
+        node.style.transform = '';
+    });
+});
