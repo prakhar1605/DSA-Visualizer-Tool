@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSA Visualizer Tool</title>
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        /* Custom styles for the app, complementing Tailwind */
         :root {
             --primary: #4361ee;
             --secondary: #3f37c9;
@@ -16,410 +20,88 @@
             --warning: #f72585;
             --gray: #6c757d;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: var(--light);
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            padding-bottom: 100px; /* Increased to accommodate new footer content */
-        }
-        
-        header {
-            text-align: center;
-            padding: 20px 0;
-            margin-bottom: 30px;
-        }
-        
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, var(--accent), var(--success));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--accent);
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .tab-btn {
-            padding: 12px 25px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 50px;
-            color: var(--light);
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .tab-btn.active {
-            background: var(--primary);
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
-        }
-        
-        .visualization-container {
-            background: rgba(30, 30, 50, 0.7);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            min-height: 500px;
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .visualization-title {
-            text-align: center;
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .controls {
-            background: rgba(40, 40, 60, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 30px;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .control-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        label {
-            color: var(--accent);
-            font-weight: 500;
-        }
-        
-        select, input, button {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--light);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        button {
-            background: var(--primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        button:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.4);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .canvas-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 400px;
-            position: relative;
-        }
-        
-        .tree-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-        }
-        
-        .sorting-container {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            height: 350px;
-            gap: 4px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .bar {
-            background: var(--accent);
-            width: 30px;
-            border-radius: 5px 5px 0 0;
-            transition: height 0.3s, background 0.3s;
-        }
-        
-        .graph-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-        }
-        
-        .node {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 10;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .node:hover {
-            transform: scale(1.1);
-            background: var(--success);
-        }
-        
-        .edge {
-            position: absolute;
-            height: 4px;
-            background: var(--accent);
-            transform-origin: 0 0;
-            z-index: 5;
-        }
-        
-        .edge-weight {
-            position: absolute;
-            background: rgba(30, 30, 50, 0.9);
-            color: var(--light);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            z-index: 7;
-        }
-        
-        .explanation {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 30px;
-            border-left: 4px solid var(--accent);
-            position: relative;
-            z-index: 20;
-        }
-        
-        .explanation h3 {
-            color: var(--success);
-            margin-bottom: 10px;
-        }
-        
-        .explanation p {
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        
-        .legend {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
-        
-        .current {
-            background: #f72585 !important;
-        }
-        
-        .visited {
-            background: #4cc9f0 !important;
-        }
-        
-        .path {
-            background: #2ec4b6 !important;
-        }
-        
-        .heap {
-            background: #ff9f1c !important;
-        }
-        
-        @media (max-width: 768px) {
-            .tabs {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .tab-btn {
-                width: 100%;
-                max-width: 300px;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .visualization-container {
-                padding: 15px;
-            }
-            
-            h1 {
-                font-size: 2.2rem;
-            }
-        }
-        
-        .code-snippet {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            font-family: monospace;
-            margin: 15px 0;
-            overflow-x: auto;
-            position: relative;
-            z-index: 20;
-        }
-        
-        footer {
-            position: absolute;
-            bottom: 10px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            padding: 15px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
-            z-index: 100;
-        }
-        
-        .author-highlight {
-            background: linear-gradient(90deg, #ff9f1c, #ff4d6d);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: bold;
-            font-size: 1.2rem;
-            padding: 3px 8px;
-            border-radius: 5px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { text-shadow: 0 0 5px rgba(255, 159, 28, 0.5); }
-            50% { text-shadow: 0 0 20px rgba(255, 77, 109, 0.8); }
-            100% { text-shadow: 0 0 5px rgba(255, 159, 28, 0.5); }
-        }
-        
-        .signature {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 5px;
-            padding: 8px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
 
-        /* Added LinkedIn link styling */
-        .linkedin-link {
-            display: block;
-            margin-top: 10px;
-            color: var(--accent);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .linkedin-link:hover {
-            color: var(--success);
-            text-decoration: underline;
-        }
-        
-        .watermark {
-            position: absolute;
-            bottom: 60px;
-            right: 30px;
-            opacity: 0.1;
-            font-size: 10rem;
-            font-weight: bold;
-            transform: rotate(-20deg);
-            color: var(--success);
-            pointer-events: none;
-            z-index: 0;
+        @layer base {
+            body {
+                @apply bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-light min-h-screen p-5 overflow-x-hidden;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            .container {
+                @apply max-w-7xl mx-auto relative pb-24; /* Increased padding for the footer */
+            }
+            /* Custom CSS for gradient text */
+            .gradient-text {
+                background: linear-gradient(90deg, var(--accent), var(--success));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            /* Custom CSS for pulse animation */
+            .author-highlight {
+                background: linear-gradient(90deg, #ff9f1c, #ff4d6d);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                font-weight: bold;
+                padding: 3px 8px;
+                border-radius: 5px;
+                animation: pulse 2s infinite;
+            }
+            @keyframes pulse {
+                0% { text-shadow: 0 0 5px rgba(255, 159, 28, 0.5); }
+                50% { text-shadow: 0 0 20px rgba(255, 77, 109, 0.8); }
+                100% { text-shadow: 0 0 5px rgba(255, 159, 28, 0.5); }
+            }
+            /* Custom CSS for specific element styles */
+            .signature {
+                @apply inline-flex items-center gap-2 mt-1 p-2 px-5 bg-[rgba(255,255,255,0.1)] rounded-full border border-[rgba(255,255,255,0.15)];
+            }
+            .linkedin-link {
+                @apply block mt-2 text-accent no-underline transition-colors duration-300;
+            }
+            .linkedin-link:hover {
+                @apply text-success underline;
+            }
+            .watermark {
+                @apply absolute bottom-16 right-5 opacity-10 text-[10rem] font-bold -rotate-12 text-success pointer-events-none z-0;
+            }
+            /* Styling for the visualization nodes and edges */
+            .node {
+                @apply absolute w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold shadow-lg cursor-pointer z-10 transition-all duration-300;
+            }
+            .node:hover {
+                @apply transform scale-110 bg-success;
+            }
+            .edge {
+                @apply absolute h-1 bg-accent transform origin-top-left z-5;
+            }
+            .edge-weight {
+                @apply absolute bg-[rgba(30,30,50,0.9)] text-light py-0.5 px-2 rounded-xl text-sm z-7;
+            }
+            /* Highlighting colors */
+            .current { background: #f72585 !important; }
+            .visited { background: #4cc9f0 !important; }
+            .path { background: #2ec4b6 !important; }
+            .heap { background: #ff9f1c !important; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="watermark">DSA</div>
+        <!-- The watermark is now positioned correctly to avoid overlap -->
+        <div class="watermark hidden md:block">DSA</div>
         
-        <header>
-            <h1><i class="fas fa-project-diagram"></i> Data Structures & Algorithms Visualizer</h1>
-            <p class="subtitle">An interactive visualization tool that demonstrates complex algorithms through intuitive animations and step-by-step explanations. Perfect for learning and understanding core DSA concepts.</p>
+        <header class="text-center py-5 mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-2 gradient-text">
+                <i class="fas fa-project-diagram mr-3"></i> Data Structures & Algorithms Visualizer
+            </h1>
+            <p class="subtitle text-accent max-w-3xl mx-auto leading-relaxed">
+                An interactive visualization tool that demonstrates complex algorithms through intuitive animations and step-by-step explanations.
+            </p>
         </header>
         
-        <div class="tabs">
+        <div class="tabs flex justify-center flex-wrap gap-3 mb-8">
             <button class="tab-btn active" data-tab="tree">
                 <i class="fas fa-tree"></i> Binary Tree Traversal
             </button>
@@ -434,111 +116,83 @@
             </button>
         </div>
         
-        <div class="controls">
-            <div class="control-group">
-                <label for="algorithm"><i class="fas fa-code"></i> Algorithm:</label>
-                <select id="algorithm">
+        <div class="controls flex flex-wrap justify-center gap-4 bg-[rgba(40,40,60,0.8)] rounded-xl p-5 mb-8 items-center">
+            <div class="control-group flex items-center gap-2">
+                <label for="algorithm" class="text-accent font-medium"><i class="fas fa-code mr-1"></i> Algorithm:</label>
+                <select id="algorithm" class="py-2 px-3 rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.1)] text-light">
                     <option value="preorder">Preorder Traversal</option>
                     <option value="inorder">Inorder Traversal</option>
                     <option value="postorder">Postorder Traversal</option>
                 </select>
             </div>
             
-            <div class="control-group">
-                <label for="speed"><i class="fas fa-tachometer-alt"></i> Speed:</label>
-                <input type="range" id="speed" min="1" max="10" value="5">
+            <div class="control-group flex items-center gap-2">
+                <label for="speed" class="text-accent font-medium"><i class="fas fa-tachometer-alt mr-1"></i> Speed:</label>
+                <input type="range" id="speed" min="1" max="10" value="5" class="w-full">
             </div>
             
-            <button id="generate">
+            <button id="generate" class="btn btn-primary">
                 <i class="fas fa-sync-alt"></i> Generate New
             </button>
-            <button id="start">
+            <button id="start" class="btn btn-primary">
                 <i class="fas fa-play"></i> Start Visualization
             </button>
-            <button id="pause">
+            <button id="pause" class="btn btn-primary">
                 <i class="fas fa-pause"></i> Pause
             </button>
-            <button id="reset">
+            <button id="reset" class="btn btn-primary">
                 <i class="fas fa-redo"></i> Reset
             </button>
         </div>
         
-        <div class="visualization-container">
+        <main class="visualization-container">
             <h2 class="visualization-title">
-                <i class="fas fa-tree"></i> Binary Tree Traversal Visualization
+                <i class="fas fa-tree mr-2"></i> Binary Tree Traversal Visualization
             </h2>
             
-            <div class="canvas-container">
+            <div class="canvas-container flex justify-center items-center min-h-[400px] relative">
                 <div class="tree-container" id="treeCanvas"></div>
             </div>
             
             <div class="explanation">
-                <h3><i class="fas fa-lightbulb"></i> Algorithm Explanation</h3>
-                <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once. The three common traversal methods are:</p>
+                <h3><i class="fas fa-lightbulb mr-2"></i> Algorithm Explanation</h3>
+                <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once.</p>
                 
-                <div class="code-snippet">
-                    // Preorder: Root → Left → Right<br>
-                    function preorder(node) {<br>
-                    &nbsp;&nbsp;if (node == null) return;<br>
-                    &nbsp;&nbsp;visit(node);<br>
-                    &nbsp;&nbsp;preorder(node.left);<br>
-                    &nbsp;&nbsp;preorder(node.right);<br>
-                    }
-                </div>
-                
-                <div class="code-snippet">
-                    // Inorder: Left → Root → Right<br>
-                    function inorder(node) {<br>
-                    &nbsp;&nbsp;if (node == null) return;<br>
-                    &nbsp;&nbsp;inorder(node.left);<br>
-                    &nbsp;&nbsp;visit(node);<br>
-                    &nbsp;&nbsp;inorder(node.right);<br>
-                    }
-                </div>
-                
-                <div class="code-snippet">
-                    // Postorder: Left → Right → Root<br>
-                    function postorder(node) {<br>
-                    &nbsp;&nbsp;if (node == null) return;<br>
-                    &nbsp;&nbsp;postorder(node.left);<br>
-                    &nbsp;&nbsp;postorder(node.right);<br>
-                    &nbsp;&nbsp;visit(node);<br>
-                    }
-                </div>
+                <!-- Code snippets will be dynamically inserted here by JavaScript -->
             </div>
-        </div>
+        </main>
         
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color" style="background: #4361ee;"></div>
+        <div class="legend flex flex-wrap justify-center gap-5 mt-5">
+            <div class="legend-item flex items-center gap-2">
+                <div class="w-5 h-5 rounded bg-primary"></div>
                 <span>Normal Node</span>
             </div>
-            <div class="legend-item">
-                <div class="legend-color current"></div>
+            <div class="legend-item flex items-center gap-2">
+                <div class="w-5 h-5 rounded current"></div>
                 <span>Current Node</span>
             </div>
-            <div class="legend-item">
-                <div class="legend-color visited"></div>
+            <div class="legend-item flex items-center gap-2">
+                <div class="w-5 h-5 rounded visited"></div>
                 <span>Visited Node</span>
             </div>
-            <div class="legend-item">
-                <div class="legend-color path"></div>
+            <div class="legend-item flex items-center gap-2">
+                <div class="w-5 h-5 rounded path"></div>
                 <span>Path Node</span>
             </div>
-            <div class="legend-item">
-                <div class="legend-color heap"></div>
+            <div class="legend-item flex items-center gap-2">
+                <div class="w-5 h-5 rounded heap"></div>
                 <span>Heap Node</span>
             </div>
         </div>
         
-        <footer>
+        <!-- The footer is now at the end of the document flow -->
+        <footer class="text-center py-5 mt-10 text-[rgba(255,255,255,0.7)] text-lg z-50">
             <div>
-                <p>Designed and developed with <i class="fas fa-heart" style="color: #ff4d6d;"></i></p>
+                <p>Designed and developed with <i class="fas fa-heart text-[#ff4d6d]"></i></p>
                 <div class="signature">
                     <i class="fas fa-user"></i>
                     <span>Made by <span class="author-highlight">Prakhar</span> in May 2025</span>
                 </div>
-                <!-- Added LinkedIn link here -->
                 <a href="https://www.linkedin.com/in/prakhar-pandey-56267a2a2/" target="_blank" class="linkedin-link">
                     <i class="fab fa-linkedin"></i> Connect with me on LinkedIn
                 </a>
@@ -546,6 +200,7 @@
         </footer>
     </div>
 
+    <!-- JavaScript logic is now at the end of the body for better performance -->
     <script>
         // Tab switching functionality
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -565,9 +220,9 @@
             
             switch(tab) {
                 case 'tree':
-                    title.innerHTML = '<i class="fas fa-tree"></i> Binary Tree Traversal Visualization';
+                    title.innerHTML = '<i class="fas fa-tree mr-2"></i> Binary Tree Traversal Visualization';
                     explanation.innerHTML = `
-                        <h3><i class="fas fa-lightbulb"></i> Algorithm Explanation</h3>
+                        <h3><i class="fas fa-lightbulb mr-2"></i> Algorithm Explanation</h3>
                         <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once. The three common traversal methods are:</p>
                         
                         <div class="code-snippet">
@@ -603,9 +258,9 @@
                     break;
                     
                 case 'sorting':
-                    title.innerHTML = '<i class="fas fa-sort-amount-down"></i> Sorting Algorithms Visualization';
+                    title.innerHTML = '<i class="fas fa-sort-amount-down mr-2"></i> Sorting Algorithms Visualization';
                     explanation.innerHTML = `
-                        <h3><i class="fas fa-lightbulb"></i> Sorting Algorithms Explained</h3>
+                        <h3><i class="fas fa-lightbulb mr-2"></i> Sorting Algorithms Explained</h3>
                         <p><strong>Sorting algorithms</strong> arrange elements of a list in a particular order. Common algorithms include:</p>
                         
                         <p><strong>Bubble Sort:</strong> Repeatedly steps through the list, compares adjacent elements and swaps them if in wrong order.</p>
@@ -617,9 +272,9 @@
                     break;
                     
                 case 'dijkstra':
-                    title.innerHTML = '<i class="fas fa-route"></i> Dijkstra\'s Algorithm Visualization';
+                    title.innerHTML = '<i class="fas fa-route mr-2"></i> Dijkstra\'s Algorithm Visualization';
                     explanation.innerHTML = `
-                        <h3><i class="fas fa-lightbulb"></i> Dijkstra's Algorithm Explained</h3>
+                        <h3><i class="fas fa-lightbulb mr-2"></i> Dijkstra's Algorithm Explained</h3>
                         <p><strong>Dijkstra's algorithm</strong> finds the shortest path between nodes in a graph with non-negative edge weights.</p>
                         
                         <div class="code-snippet">
@@ -653,9 +308,9 @@
                     break;
                     
                 case 'recursion':
-                    title.innerHTML = '<i class="fas fa-sitemap"></i> Recursion Stack Visualization';
+                    title.innerHTML = '<i class="fas fa-sitemap mr-2"></i> Recursion Stack Visualization';
                     explanation.innerHTML = `
-                        <h3><i class="fas fa-lightbulb"></i> Understanding Recursion</h3>
+                        <h3><i class="fas fa-lightbulb mr-2"></i> Understanding Recursion</h3>
                         <p><strong>Recursion</strong> is a programming technique where a function calls itself to solve smaller instances of the same problem.</p>
                         
                         <p>Key components of recursion:</p>
@@ -897,21 +552,23 @@
         // Initialize sorting visualization
         function initSortingVisualization() {
             const container = document.querySelector('.sorting-container');
-            container.innerHTML = '';
-            
-            // Generate random array
-            const array = [];
-            for (let i = 0; i < 15; i++) {
-                array.push(Math.floor(Math.random() * 250) + 20);
+            if (container) {
+                container.innerHTML = '';
+                
+                // Generate random array
+                const array = [];
+                for (let i = 0; i < 15; i++) {
+                    array.push(Math.floor(Math.random() * 250) + 20);
+                }
+                
+                // Create bars
+                array.forEach(value => {
+                    const bar = document.createElement('div');
+                    bar.className = 'bar';
+                    bar.style.height = `${value}px`;
+                    container.appendChild(bar);
+                });
             }
-            
-            // Create bars
-            array.forEach(value => {
-                const bar = document.createElement('div');
-                bar.className = 'bar';
-                bar.style.height = `${value}px`;
-                container.appendChild(bar);
-            });
         }
         
         // Initialize on page load
