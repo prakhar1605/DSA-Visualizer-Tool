@@ -5,7 +5,474 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DSA Visualizer Tool</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="./styles.css">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-attachment: fixed;
+            color: #f8f9fa;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(18, 18, 30, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 25vw;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        header h1 i {
+            margin-right: 15px;
+            color: #4361ee;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: rgba(67, 97, 238, 0.2);
+            border: 2px solid #4361ee;
+            color: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(67, 97, 238, 0.3);
+        }
+
+        .tab-btn.active {
+            background: #4361ee;
+            box-shadow: 0 0 15px rgba(67, 97, 238, 0.5);
+        }
+
+        .tab-btn i {
+            margin-right: 8px;
+        }
+
+        /* Controls */
+        .controls {
+            background: rgba(30, 30, 50, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .control-group label i {
+            margin-right: 10px;
+            color: #4361ee;
+        }
+
+        select, input[type="range"] {
+            background: rgba(18, 18, 30, 0.8);
+            border: 2px solid #4361ee;
+            border-radius: 8px;
+            color: #f8f9fa;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: rgba(67, 97, 238, 0.2);
+            border: none;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4361ee;
+            cursor: pointer;
+        }
+
+        #generate, #start, #pause, #reset {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        #generate {
+            background: #7209b7;
+            color: white;
+        }
+
+        #start {
+            background: #2ecc71;
+            color: white;
+        }
+
+        #pause {
+            background: #f39c12;
+            color: white;
+        }
+
+        #reset {
+            background: #e74c3c;
+            color: white;
+        }
+
+        #generate:hover, #start:hover, #pause:hover, #reset:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Visualization Container */
+        .visualization-container {
+            background: rgba(30, 30, 50, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .visualization-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .visualization-title i {
+            margin-right: 10px;
+            color: #4361ee;
+        }
+
+        .canvas-container {
+            background: rgba(18, 18, 30, 0.8);
+            border-radius: 8px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .tree-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Explanation */
+        .explanation h3 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .explanation h3 i {
+            margin-right: 10px;
+            color: #f39c12;
+        }
+
+        .explanation p {
+            margin-bottom: 20px;
+        }
+
+        .code-snippet {
+            background: rgba(18, 18, 30, 0.9);
+            border-left: 4px solid #4361ee;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* Legend */
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 30, 50, 0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .current {
+            background: #2ecc71;
+        }
+
+        .visited {
+            background: #f39c12;
+        }
+
+        .path {
+            background: #e74c3c;
+        }
+
+        .heap {
+            background: #9b59b6;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer p {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .signature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .signature i {
+            margin-right: 10px;
+            color: #4361ee;
+        }
+
+        .author-highlight {
+            color: #4361ee;
+            font-weight: 600;
+        }
+
+        .linkedin-link {
+            display: inline-flex;
+            align-items: center;
+            color: #0e76a8;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: rgba(14, 118, 168, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .linkedin-link:hover {
+            background: rgba(14, 118, 168, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .linkedin-link i {
+            margin-right: 8px;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 576px) {
+            .controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tab-text {
+                display: inline;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+            
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .controls {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .control-group {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .legend {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .controls {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .controls button {
+                grid-column: span 1;
+            }
+            
+            .legend {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (max-width: 575px) {
+            .tab-btn {
+                padding: 10px;
+            }
+            
+            .tab-text {
+                display: none;
+            }
+            
+            .watermark {
+                font-size: 30vw;
+            }
+            
+            .visualization-title {
+                font-size: 1.3rem;
+            }
+            
+            .code-snippet {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Tree Visualization Styles */
+        .node {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #4361ee;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: absolute;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .node-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: 0 0;
+            z-index: 1;
+        }
+
+        .node.current {
+            background: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
+            transform: scale(1.1);
+        }
+
+        .node.visited {
+            background: #f39c12;
+        }
+
+        .node.path {
+            background: #e74c3c;
+        }
+
+        .node.heap {
+            background: #9b59b6;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -66,7 +533,24 @@
             </h2>
             
             <div class="canvas-container">
-                <div class="tree-container" id="treeCanvas"></div>
+                <div class="tree-container" id="treeCanvas">
+                    <!-- Tree visualization will be generated here -->
+                    <div class="node" style="top: 30px; left: 50%;">5</div>
+                    <div class="node" style="top: 110px; left: 30%;">3</div>
+                    <div class="node" style="top: 110px; left: 70%;">8</div>
+                    <div class="node" style="top: 190px; left: 20%;">2</div>
+                    <div class="node" style="top: 190px; left: 40%;">4</div>
+                    <div class="node" style="top: 190px; left: 60%;">7</div>
+                    <div class="node" style="top: 190px; left: 80%;">9</div>
+                    
+                    <!-- Lines connecting nodes -->
+                    <div class="node-line" style="top: 55px; left: 50%; width: 80px; transform: rotate(-30deg);"></div>
+                    <div class="node-line" style="top: 55px; left: 50%; width: 80px; transform: rotate(30deg);"></div>
+                    <div class="node-line" style="top: 135px; left: 30%; width: 50px; transform: rotate(-45deg);"></div>
+                    <div class="node-line" style="top: 135px; left: 30%; width: 50px; transform: rotate(45deg);"></div>
+                    <div class="node-line" style="top: 135px; left: 70%; width: 50px; transform: rotate(-45deg);"></div>
+                    <div class="node-line" style="top: 135px; left: 70%; width: 50px; transform: rotate(45deg);"></div>
+                </div>
             </div>
             
             <div class="explanation">
@@ -74,32 +558,32 @@
                 <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once. The three common traversal methods are:</p>
                 
                 <div class="code-snippet">
-                    // Preorder: Root → Left → Right<br>
-                    function preorder(node) {<br>
-                    &nbsp;&nbsp;if (node == null) return;<br>
-                    &nbsp;&nbsp;visit(node);<br>
-                    &nbsp;&nbsp;preorder(node.left);<br>
-                    &nbsp;&nbsp;preorder(node.right);<br>
+                    // Preorder: Root → Left → Right
+                    function preorder(node) {
+                      if (node == null) return;
+                      visit(node);
+                      preorder(node.left);
+                      preorder(node.right);
                     }
                 </div>
                 
                 <div class="code-snippet">
-                    // Inorder: Left → Root → Right<br>
-                    function inorder(node) {<br>
-                    &nbsp;&nbsp;if (node == null) return;<br>
-                    &nbsp;&nbsp;inorder(node.left);<br>
-                    &nbsp;&nbsp;visit(node);<br>
-                    &nbsp;&nbsp;inorder(node.right);<br>
+                    // Inorder: Left → Root → Right
+                    function inorder(node) {
+                      if (node == null) return;
+                      inorder(node.left);
+                      visit(node);
+                      inorder(node.right);
                     }
                 </div>
                 
                 <div class="code-snippet">
-                    // Postorder: Left → Right → Root<br>
-                    function postorder(node) {<br>
-                    &nbsp;&nbsp;if (node == null) return;<br>
-                    &nbsp;&nbsp;postorder(node.left);<br>
-                    &nbsp;&nbsp;postorder(node.right);<br>
-                    &nbsp;&nbsp;visit(node);<br>
+                    // Postorder: Left → Right → Root
+                    function postorder(node) {
+                      if (node == null) return;
+                      postorder(node.left);
+                      postorder(node.right);
+                      visit(node);
                     }
                 </div>
             </div>
@@ -142,6 +626,120 @@
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Basic functionality for the visualization tool
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const treeCanvas = document.getElementById('treeCanvas');
+            const nodes = document.querySelectorAll('.node');
+            
+            // Tab switching functionality
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                });
+            });
+            
+            // Generate new tree
+            document.getElementById('generate').addEventListener('click', generateNewTree);
+            
+            // Start visualization
+            document.getElementById('start').addEventListener('click', startVisualization);
+            
+            // Simple tree generation
+            function generateNewTree() {
+                // For demo purposes, we'll just toggle some classes
+                nodes.forEach(node => {
+                    node.classList.remove('current', 'visited', 'path');
+                });
+                
+                // Highlight root node
+                nodes[0].classList.add('current');
+                
+                // Simulate traversal after a delay
+                setTimeout(() => {
+                    nodes[0].classList.remove('current');
+                    nodes[0].classList.add('visited');
+                    
+                    nodes[1].classList.add('current');
+                }, 1000);
+                
+                setTimeout(() => {
+                    nodes[1].classList.remove('current');
+                    nodes[1].classList.add('visited');
+                    
+                    nodes[3].classList.add('current');
+                }, 2000);
+                
+                setTimeout(() => {
+                    nodes[3].classList.remove('current');
+                    nodes[3].classList.add('visited');
+                    
+                    nodes[4].classList.add('current');
+                }, 3000);
+            }
+            
+            // Start visualization
+            function startVisualization() {
+                const algorithm = document.getElementById('algorithm').value;
+                alert(`Starting ${algorithm} traversal visualization!`);
+                
+                // Reset all nodes
+                nodes.forEach(node => {
+                    node.classList.remove('current', 'visited', 'path');
+                });
+                
+                // Simple visualization based on selected algorithm
+                if (algorithm === 'preorder') {
+                    simulatePreorder();
+                } else if (algorithm === 'inorder') {
+                    simulateInorder();
+                } else if (algorithm === 'postorder') {
+                    simulatePostorder();
+                }
+            }
+            
+            // Simulation functions for different algorithms
+            function simulatePreorder() {
+                // Simple simulation for demo
+                const order = [0, 1, 3, 4, 2, 5, 6];
+                animateTraversal(order);
+            }
+            
+            function simulateInorder() {
+                // Simple simulation for demo
+                const order = [3, 1, 4, 0, 5, 2, 6];
+                animateTraversal(order);
+            }
+            
+            function simulatePostorder() {
+                // Simple simulation for demo
+                const order = [3, 4, 1, 5, 6, 2, 0];
+                animateTraversal(order);
+            }
+            
+            function animateTraversal(order) {
+                order.forEach((nodeIndex, i) => {
+                    setTimeout(() => {
+                        // Remove current from all nodes
+                        nodes.forEach(node => node.classList.remove('current'));
+                        
+                        // Add current to the current node
+                        nodes[nodeIndex].classList.add('current');
+                        
+                        // After a short time, mark as visited
+                        setTimeout(() => {
+                            nodes[nodeIndex].classList.remove('current');
+                            nodes[nodeIndex].classList.add('visited');
+                        }, 500);
+                    }, i * 1000);
+                });
+            }
+            
+            // Initialize with a simple tree
+            generateNewTree();
+        });
+    </script>
 </body>
 </html>
