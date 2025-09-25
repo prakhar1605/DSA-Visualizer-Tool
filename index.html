@@ -2,986 +2,970 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSA Visualizer Tool</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Visualizer - Working Version</title>
     <style>
-        /* Base Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            background-attachment: fixed;
-            color: #f8f9fa;
-            min-height: 100vh;
-            padding: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
             line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
         }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: rgba(18, 18, 30, 0.95);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
         }
-
-        .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 25vw;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.03);
-            z-index: 0;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        /* Header Styles */
+        
         header {
             text-align: center;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-            color: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
         }
-
-        header h1 i {
-            margin-right: 15px;
-            color: #4361ee;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: #e0e0e0;
+        
+        .description {
+            color: #7f8c8d;
             max-width: 800px;
             margin: 0 auto;
         }
-
-        /* Tabs */
-        .tabs {
+        
+        .main-content {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 25px;
-            justify-content: center;
+            gap: 20px;
         }
-
-        .tab-btn {
-            background: rgba(67, 97, 238, 0.2);
-            border: 2px solid #4361ee;
-            color: #f8f9fa;
-            padding: 12px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-            flex: 1;
-            min-width: 120px;
-            justify-content: center;
-        }
-
-        .tab-btn:hover {
-            background: rgba(67, 97, 238, 0.3);
-        }
-
-        .tab-btn.active {
-            background: #4361ee;
-            box-shadow: 0 0 15px rgba(67, 97, 238, 0.5);
-        }
-
-        .tab-btn i {
-            margin-right: 8px;
-        }
-
-        /* Controls */
+        
         .controls {
-            background: rgba(30, 30, 50, 0.7);
+            flex: 1;
+            min-width: 300px;
+            background: white;
             padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .control-group label {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .control-group label i {
-            margin-right: 10px;
-            color: #4361ee;
-        }
-
-        select, input[type="range"] {
-            background: rgba(18, 18, 30, 0.8);
-            border: 2px solid #4361ee;
-            border-radius: 8px;
-            color: #f8f9fa;
-            padding: 10px;
-            font-size: 1rem;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            height: 8px;
-            background: rgba(67, 97, 238, 0.2);
-            border: none;
-            padding: 0;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4361ee;
-            cursor: pointer;
-        }
-
-        #generate, #start, #pause, #reset {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        #generate {
-            background: #7209b7;
-            color: white;
-        }
-
-        #start {
-            background: #2ecc71;
-            color: white;
-        }
-
-        #pause {
-            background: #f39c12;
-            color: white;
-        }
-
-        #reset {
-            background: #e74c3c;
-            color: white;
-        }
-
-        #generate:hover, #start:hover, #pause:hover, #reset:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        /* Visualization Container */
-        .visualization-container {
-            background: rgba(30, 30, 50, 0.7);
+        
+        .visualization {
+            flex: 2;
+            min-width: 300px;
+            background: white;
             padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-height: 500px;
         }
-
-        .visualization-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            justify-content: center;
-        }
-
-        .visualization-title i {
-            margin-right: 10px;
-            color: #4361ee;
-        }
-
-        .canvas-container {
-            background: rgba(18, 18, 30, 0.8);
-            border-radius: 8px;
-            min-height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            padding: 20px;
-            overflow: auto;
-        }
-
-        .tree-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        /* Explanation */
-        .explanation h3 {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .explanation h3 i {
-            margin-right: 10px;
-            color: #f39c12;
-        }
-
-        .explanation p {
+        
+        .algorithm-selector {
             margin-bottom: 20px;
         }
-
-        .code-snippet {
-            background: rgba(18, 18, 30, 0.9);
-            border-left: 4px solid #4361ee;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 0 8px 8px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            white-space: pre;
+        
+        .algorithm-selector h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
         }
-
-        /* Legend */
-        .legend {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .legend-item {
+        
+        .algorithm-buttons {
             display: flex;
-            align-items: center;
-            background: rgba(30, 30, 50, 0.7);
+            gap: 10px;
+        }
+        
+        button {
             padding: 10px 15px;
-            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
         }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .current {
-            background: #2ecc71;
-        }
-
-        .visited {
-            background: #f39c12;
-        }
-
-        .path {
-            background: #e74c3c;
-        }
-
-        .heap {
-            background: #9b59b6;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        footer p {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .signature {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-
-        .signature i {
-            margin-right: 10px;
-            color: #4361ee;
-        }
-
-        .author-highlight {
-            color: #4361ee;
-            font-weight: 600;
-        }
-
-        .linkedin-link {
-            display: inline-flex;
-            align-items: center;
-            color: #0e76a8;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 50px;
-            background: rgba(14, 118, 168, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .linkedin-link:hover {
-            background: rgba(14, 118, 168, 0.2);
+        
+        button:hover {
+            background: #2980b9;
             transform: translateY(-2px);
         }
-
-        .linkedin-link i {
-            margin-right: 8px;
+        
+        button.active {
+            background: #2c3e50;
         }
-
-        /* Tree Visualization Styles */
+        
+        .control-group {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .control-group h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .step-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .step-controls button {
+            flex: 1;
+        }
+        
+        #prevStep {
+            background: #e74c3c;
+        }
+        
+        #prevStep:hover {
+            background: #c0392b;
+        }
+        
+        #nextStep {
+            background: #2ecc71;
+        }
+        
+        #nextStep:hover {
+            background: #27ae60;
+        }
+        
+        #reset {
+            background: #f39c12;
+        }
+        
+        #reset:hover {
+            background: #d35400;
+        }
+        
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4fc;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .explanation h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .canvas {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            position: relative;
+            overflow: auto;
+            background: #fafafa;
+        }
+        
         .node {
-            width: 45px;
-            height: 45px;
+            position: absolute;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: #4361ee;
+            background: #3498db;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            position: absolute;
-            transition: all 0.3s ease;
-            z-index: 2;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
         }
-
-        .node-line {
+        
+        .node.visited {
+            background: #2ecc71;
+        }
+        
+        .node.current {
+            background: #e74c3c;
+            transform: scale(1.2);
+        }
+        
+        .edge {
             position: absolute;
-            background: rgba(255, 255, 255, 0.3);
+            height: 3px;
+            background: #7f8c8d;
             transform-origin: 0 0;
             z-index: 1;
-            height: 2px;
         }
-
-        .node.current {
-            background: #2ecc71;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
-            transform: scale(1.1);
-        }
-
-        .node.visited {
-            background: #f39c12;
-        }
-
-        .node.path {
-            background: #e74c3c;
-        }
-
-        .node.heap {
-            background: #9b59b6;
-        }
-
-        /* Mobile Navigation */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(18, 18, 30, 0.95);
-            z-index: 1000;
-            padding: 10px;
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .mobile-nav-buttons {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .mobile-nav-btn {
+        
+        .dijkstra-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #f8f9fa;
-            font-size: 0.8rem;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: rgba(67, 97, 238, 0.2);
-            border: 1px solid #4361ee;
-        }
-
-        .mobile-nav-btn i {
-            margin-bottom: 5px;
-            font-size: 1.2rem;
-        }
-
-        /* Responsive Design */
-        @media (min-width: 576px) {
-            .controls {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tab-text {
-                display: inline;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                padding: 30px;
-            }
-            
-            header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .controls {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .control-group {
-                flex-direction: row;
-                align-items: center;
-            }
-            
-            .legend {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 992px) {
-            .controls {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .controls button {
-                grid-column: span 1;
-            }
-            
-            .legend {
-                grid-template-columns: repeat(5, 1fr);
-            }
-        }
-
-        @media (max-width: 575px) {
-            .tab-btn {
-                padding: 10px;
-                min-width: 70px;
-            }
-            
-            .tab-text {
-                display: none;
-            }
-            
-            .watermark {
-                font-size: 30vw;
-            }
-            
-            .visualization-title {
-                font-size: 1.3rem;
-            }
-            
-            .code-snippet {
-                font-size: 0.8rem;
-            }
-            
-            .mobile-nav {
-                display: block;
-            }
-            
-            .controls {
-                margin-bottom: 70px; /* Space for mobile nav */
-            }
-            
-            footer {
-                margin-bottom: 70px; /* Space for mobile nav */
-            }
-            
-            .node {
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Animation for nodes */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .node.animated {
-            animation: pulse 1s infinite;
-        }
-
-        /* Status bar */
-        .status-bar {
-            display: flex;
             justify-content: center;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: #e0e0e0;
+            font-weight: bold;
+            transition: all 0.5s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
         }
-
-        .status-item {
+        
+        .dijkstra-node .label {
+            font-size: 18px;
+        }
+        
+        .dijkstra-node .distance {
+            font-size: 14px;
+            margin-top: 2px;
+        }
+        
+        .dijkstra-node.visited {
+            background: #2ecc71;
+        }
+        
+        .dijkstra-node.current {
+            background: #e74c3c;
+            transform: scale(1.2);
+        }
+        
+        .dijkstra-edge {
+            position: absolute;
+            height: 3px;
+            background: #7f8c8d;
+            transform-origin: 0 0;
+            z-index: 1;
+        }
+        
+        .weight {
+            position: absolute;
+            background: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            z-index: 5;
+        }
+        
+        .traversal-order {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .order-node {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
             display: flex;
             align-items: center;
-            margin: 0 10px;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s;
         }
-
-        .status-item i {
-            margin-right: 5px;
+        
+        .order-node.current {
+            background: #e74c3c;
+            transform: scale(1.2);
+        }
+        
+        .order-node.visited {
+            background: #2ecc71;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .canvas {
+                height: 300px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="watermark">DSA</div>
-        
         <header>
-            <h1><i class="fas fa-project-diagram"></i> Data Structures & Algorithms Visualizer</h1>
-            <p class="subtitle">An interactive visualization tool that demonstrates complex algorithms through intuitive animations and step-by-step explanations. Perfect for learning and understanding core DSA concepts.</p>
+            <h1>DSA Visualizer - Working Version</h1>
+            <p class="description">Visualize Binary Tree Traversal and Dijkstra's Algorithm with step-by-step animations</p>
         </header>
         
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="tree">
-                <i class="fas fa-tree"></i> <span class="tab-text">Binary Tree</span>
-            </button>
-            <button class="tab-btn" data-tab="sorting">
-                <i class="fas fa-sort-amount-down"></i> <span class="tab-text">Sorting</span>
-            </button>
-            <button class="tab-btn" data-tab="dijkstra">
-                <i class="fas fa-route"></i> <span class="tab-text">Dijkstra's</span>
-            </button>
-            <button class="tab-btn" data-tab="recursion">
-                <i class="fas fa-sitemap"></i> <span class="tab-text">Recursion</span>
-            </button>
-        </div>
-        
-        <div class="status-bar">
-            <div class="status-item">
-                <i class="fas fa-code-branch"></i>
-                <span id="node-count">7 Nodes</span>
-            </div>
-            <div class="status-item">
-                <i class="fas fa-bolt"></i>
-                <span id="speed-value">Medium Speed</span>
-            </div>
-            <div class="status-item">
-                <i class="fas fa-play-circle"></i>
-                <span id="status">Ready</span>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <div class="control-group">
-                <label for="algorithm"><i class="fas fa-code"></i> <span class="control-label">Algorithm:</span></label>
-                <select id="algorithm">
-                    <option value="preorder">Preorder Traversal</option>
-                    <option value="inorder">Inorder Traversal</option>
-                    <option value="postorder">Postorder Traversal</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label for="speed"><i class="fas fa-tachometer-alt"></i> <span class="control-label">Speed:</span></label>
-                <input type="range" id="speed" min="1" max="10" value="5">
-            </div>
-            
-            <button id="generate">
-                <i class="fas fa-sync-alt"></i> <span>Generate New</span>
-            </button>
-            <button id="start">
-                <i class="fas fa-play"></i> <span>Start</span>
-            </button>
-            <button id="pause">
-                <i class="fas fa-pause"></i> <span>Pause</span>
-            </button>
-            <button id="reset">
-                <i class="fas fa-redo"></i> <span>Reset</span>
-            </button>
-        </div>
-        
-        <div class="visualization-container">
-            <h2 class="visualization-title">
-                <i class="fas fa-tree"></i> Binary Tree Traversal Visualization
-            </h2>
-            
-            <div class="canvas-container">
-                <div class="tree-container" id="treeCanvas">
-                    <!-- Tree visualization will be generated here -->
-                    <div class="node" style="top: 30px; left: 50%; transform: translateX(-50%);">5</div>
-                    <div class="node" style="top: 110px; left: 30%;">3</div>
-                    <div class="node" style="top: 110px; left: 70%;">8</div>
-                    <div class="node" style="top: 190px; left: 20%;">2</div>
-                    <div class="node" style="top: 190px; left: 40%;">4</div>
-                    <div class="node" style="top: 190px; left: 60%;">7</div>
-                    <div class="node" style="top: 190px; left: 80%;">9</div>
+        <div class="main-content">
+            <div class="controls">
+                <div class="algorithm-selector">
+                    <h3>Select Algorithm</h3>
+                    <div class="algorithm-buttons">
+                        <button id="btnTree" class="active">Binary Tree</button>
+                        <button id="btnDijkstra">Dijkstra's</button>
+                    </div>
+                </div>
+                
+                <div id="treeControls">
+                    <div class="control-group">
+                        <h4>Tree Type</h4>
+                        <select id="treeType">
+                            <option value="balanced">Balanced Tree</option>
+                            <option value="unbalanced">Unbalanced Tree</option>
+                        </select>
+                    </div>
                     
-                    <!-- Lines connecting nodes -->
-                    <div class="node-line" style="top: 55px; left: 50%; width: 80px; transform: translateX(-50%) rotate(-30deg);"></div>
-                    <div class="node-line" style="top: 55px; left: 50%; width: 80px; transform: translateX(-50%) rotate(30deg);"></div>
-                    <div class="node-line" style="top: 135px; left: 30%; width: 50px; transform: rotate(-45deg);"></div>
-                    <div class="node-line" style="top: 135px; left: 30%; width: 50px; transform: rotate(45deg);"></div>
-                    <div class="node-line" style="top: 135px; left: 70%; width: 50px; transform: rotate(-45deg);"></div>
-                    <div class="node-line" style="top: 135px; left: 70%; width: 50px; transform: rotate(45deg);"></div>
+                    <div class="control-group">
+                        <h4>Traversal Type</h4>
+                        <select id="traversalType">
+                            <option value="inorder">Inorder (Left, Root, Right)</option>
+                            <option value="preorder">Preorder (Root, Left, Right)</option>
+                            <option value="postorder">Postorder (Left, Right, Root)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="generateTree">Generate Tree & Start</button>
                 </div>
+                
+                <div id="dijkstraControls" style="display: none;">
+                    <div class="control-group">
+                        <h4>Graph Type</h4>
+                        <select id="graphType">
+                            <option value="simple">Simple Graph</option>
+                            <option value="complex">Complex Graph</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h4>Start Node</h4>
+                        <select id="startNode">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                    
+                    <button id="generateGraph">Generate Graph & Start</button>
+                </div>
+                
+                <div class="step-controls">
+                    <button id="prevStep">Previous Step</button>
+                    <button id="nextStep">Next Step</button>
+                    <button id="reset">Reset</button>
+                </div>
+                
+                <div class="explanation">
+                    <h4>Algorithm Explanation</h4>
+                    <p id="explanationText">Select an algorithm and click generate to start visualization.</p>
+                </div>
+                
+                <div class="traversal-order" id="traversalOrder"></div>
+                <div class="status" id="status">Ready to visualize! Click Generate to start.</div>
             </div>
             
-            <div class="explanation">
-                <h3><i class="fas fa-lightbulb"></i> Algorithm Explanation</h3>
-                <p><strong>Tree traversal</strong> refers to the process of visiting each node in a tree data structure exactly once. The three common traversal methods are:</p>
-                
-                <div class="code-snippet">
-                    // Preorder: Root → Left → Right
-                    function preorder(node) {
-                      if (node == null) return;
-                      visit(node);
-                      preorder(node.left);
-                      preorder(node.right);
-                    }
-                </div>
-                
-                <div class="code-snippet">
-                    // Inorder: Left → Root → Right
-                    function inorder(node) {
-                      if (node == null) return;
-                      inorder(node.left);
-                      visit(node);
-                      inorder(node.right);
-                    }
-                </div>
-                
-                <div class="code-snippet">
-                    // Postorder: Left → Right → Root
-                    function postorder(node) {
-                      if (node == null) return;
-                      postorder(node.left);
-                      postorder(node.right);
-                      visit(node);
-                    }
+            <div class="visualization">
+                <h3>Visualization</h3>
+                <div class="canvas" id="canvas">
+                    <!-- Visualization will be rendered here -->
                 </div>
             </div>
-        </div>
-        
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color" style="background: #4361ee;"></div>
-                <span>Normal Node</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color current"></div>
-                <span>Current Node</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color visited"></div>
-                <span>Visited Node</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color path"></div>
-                <span>Path Node</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color heap"></div>
-                <span>Heap Node</span>
-            </div>
-        </div>
-        
-        <footer>
-            <div>
-                <p>Designed and developed with <i class="fas fa-heart" style="color: #ff4d6d;"></i></p>
-                <div class="signature">
-                    <i class="fas fa-user"></i>
-                    <span>Made by <span class="author-highlight">Prakhar</span> in May 2025</span>
-                </div>
-                <a href="https://www.linkedin.com/in/prakhar-pandey-56267a2a2/" target="_blank" class="linkedin-link">
-                    <i class="fab fa-linkedin"></i> Connect with me on LinkedIn
-                </a>
-            </div>
-        </footer>
-    </div>
-
-    <div class="mobile-nav">
-        <div class="mobile-nav-buttons">
-            <button class="mobile-nav-btn" id="mobile-generate">
-                <i class="fas fa-sync-alt"></i>
-                <span>New</span>
-            </button>
-            <button class="mobile-nav-btn" id="mobile-start">
-                <i class="fas fa-play"></i>
-                <span>Start</span>
-            </button>
-            <button class="mobile-nav-btn" id="mobile-pause">
-                <i class="fas fa-pause"></i>
-                <span>Pause</span>
-            </button>
-            <button class="mobile-nav-btn" id="mobile-reset">
-                <i class="fas fa-redo"></i>
-                <span>Reset</span>
-            </button>
         </div>
     </div>
 
     <script>
-        // Enhanced functionality for the visualization tool
+        // Simple and working DSA Visualizer
         document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.tab-btn');
-            const treeCanvas = document.getElementById('treeCanvas');
-            const nodes = document.querySelectorAll('.node');
-            const speedSlider = document.getElementById('speed');
-            const speedValue = document.getElementById('speed-value');
-            const statusElement = document.getElementById('status');
-            let isPlaying = false;
-            let currentAnimation = null;
+            // DOM elements
+            const btnTree = document.getElementById('btnTree');
+            const btnDijkstra = document.getElementById('btnDijkstra');
+            const treeControls = document.getElementById('treeControls');
+            const dijkstraControls = document.getElementById('dijkstraControls');
+            const generateTree = document.getElementById('generateTree');
+            const generateGraph = document.getElementById('generateGraph');
+            const prevStep = document.getElementById('prevStep');
+            const nextStep = document.getElementById('nextStep');
+            const reset = document.getElementById('reset');
+            const explanationText = document.getElementById('explanationText');
+            const canvas = document.getElementById('canvas');
+            const traversalOrderContainer = document.getElementById('traversalOrder');
+            const status = document.getElementById('status');
             
-            // Update speed value display
-            speedSlider.addEventListener('input', function() {
-                const speed = this.value;
-                if (speed < 4) {
-                    speedValue.textContent = 'Slow Speed';
-                } else if (speed < 7) {
-                    speedValue.textContent = 'Medium Speed';
+            // State variables
+            let currentAlgorithm = 'tree';
+            let currentStep = 0;
+            let steps = [];
+            let traversalOrder = [];
+            
+            // Event listeners
+            btnTree.addEventListener('click', function() {
+                currentAlgorithm = 'tree';
+                btnTree.classList.add('active');
+                btnDijkstra.classList.remove('active');
+                treeControls.style.display = 'block';
+                dijkstraControls.style.display = 'none';
+                resetVisualization();
+                status.textContent = 'Binary Tree selected. Click Generate to start.';
+            });
+            
+            btnDijkstra.addEventListener('click', function() {
+                currentAlgorithm = 'dijkstra';
+                btnDijkstra.classList.add('active');
+                btnTree.classList.remove('active');
+                dijkstraControls.style.display = 'block';
+                treeControls.style.display = 'none';
+                resetVisualization();
+                status.textContent = "Dijkstra's Algorithm selected. Click Generate to start.";
+            });
+            
+            generateTree.addEventListener('click', function() {
+                generateTreeVisualization();
+            });
+            
+            generateGraph.addEventListener('click', function() {
+                generateGraphVisualization();
+            });
+            
+            prevStep.addEventListener('click', function() {
+                if (currentStep > 0) {
+                    currentStep--;
+                    updateVisualization();
+                    status.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+                }
+            });
+            
+            nextStep.addEventListener('click', function() {
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    updateVisualization();
+                    status.textContent = `Step ${currentStep + 1} of ${steps.length}`;
                 } else {
-                    speedValue.textContent = 'Fast Speed';
+                    status.textContent = 'Algorithm completed! Click Reset to start over.';
                 }
             });
             
-            // Tab switching functionality
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    statusElement.textContent = `Switched to ${tab.dataset.tab} tab`;
-                });
-            });
+            reset.addEventListener('click', resetVisualization);
             
-            // Generate new tree
-            document.getElementById('generate').addEventListener('click', generateNewTree);
-            document.getElementById('mobile-generate').addEventListener('click', generateNewTree);
-            
-            // Start visualization
-            document.getElementById('start').addEventListener('click', startVisualization);
-            document.getElementById('mobile-start').addEventListener('click', startVisualization);
-            
-            // Pause visualization
-            document.getElementById('pause').addEventListener('click', pauseVisualization);
-            document.getElementById('mobile-pause').addEventListener('click', pauseVisualization);
-            
-            // Reset visualization
-            document.getElementById('reset').addEventListener('click', resetVisualization);
-            document.getElementById('mobile-reset').addEventListener('click', resetVisualization);
-            
-            // Simple tree generation
-            function generateNewTree() {
-                if (isPlaying) {
-                    pauseVisualization();
-                }
+            // Tree visualization functions
+            function generateTreeVisualization() {
+                resetVisualization();
+                status.textContent = 'Generating tree visualization...';
                 
-                statusElement.textContent = 'Generating new tree...';
+                // Generate tree based on selection
+                const treeType = document.getElementById('treeType').value;
+                const traversalType = document.getElementById('traversalType').value;
                 
-                // For demo purposes, we'll just toggle some classes
-                nodes.forEach(node => {
-                    node.classList.remove('current', 'visited', 'path', 'animated');
-                });
-                
-                // Reset lines
-                document.querySelectorAll('.node-line').forEach(line => {
-                    line.style.background = 'rgba(255, 255, 255, 0.3)';
-                });
-                
-                // Highlight root node after a short delay
-                setTimeout(() => {
-                    nodes[0].classList.add('current', 'animated');
-                    statusElement.textContent = 'New tree generated. Click Start to begin.';
-                }, 500);
-            }
-            
-            // Start visualization
-            function startVisualization() {
-                if (isPlaying) return;
-                
-                const algorithm = document.getElementById('algorithm').value;
-                statusElement.textContent = `Running ${algorithm} traversal...`;
-                isPlaying = true;
-                
-                // Reset all nodes
-                nodes.forEach(node => {
-                    node.classList.remove('current', 'visited', 'path', 'animated');
-                });
-                
-                // Reset lines
-                document.querySelectorAll('.node-line').forEach(line => {
-                    line.style.background = 'rgba(255, 255, 255, 0.3)';
-                });
-                
-                // Simple visualization based on selected algorithm
-                if (algorithm === 'preorder') {
-                    simulatePreorder();
-                } else if (algorithm === 'inorder') {
-                    simulateInorder();
-                } else if (algorithm === 'postorder') {
-                    simulatePostorder();
-                }
-            }
-            
-            // Pause visualization
-            function pauseVisualization() {
-                if (!isPlaying) return;
-                
-                statusElement.textContent = 'Visualization paused';
-                isPlaying = false;
-                
-                if (currentAnimation) {
-                    clearTimeout(currentAnimation);
-                }
-                
-                // Remove animation from all nodes
-                nodes.forEach(node => {
-                    node.classList.remove('animated');
-                });
-            }
-            
-            // Reset visualization
-            function resetVisualization() {
-                pauseVisualization();
-                
-                statusElement.textContent = 'Visualization reset';
-                
-                // Reset all nodes
-                nodes.forEach(node => {
-                    node.classList.remove('current', 'visited', 'path', 'animated');
-                });
-                
-                // Reset lines
-                document.querySelectorAll('.node-line').forEach(line => {
-                    line.style.background = 'rgba(255, 255, 255, 0.3)';
-                });
-                
-                // Highlight root node
-                setTimeout(() => {
-                    nodes[0].classList.add('current', 'animated');
-                }, 300);
-            }
-            
-            // Simulation functions for different algorithms
-            function simulatePreorder() {
-                // Simple simulation for demo
-                const order = [0, 1, 3, 4, 2, 5, 6];
-                animateTraversal(order, 'Preorder');
-            }
-            
-            function simulateInorder() {
-                // Simple simulation for demo
-                const order = [3, 1, 4, 0, 5, 2, 6];
-                animateTraversal(order, 'Inorder');
-            }
-            
-            function simulatePostorder() {
-                // Simple simulation for demo
-                const order = [3, 4, 1, 5, 6, 2, 0];
-                animateTraversal(order, 'Postorder');
-            }
-            
-            function animateTraversal(order, algorithmName) {
-                const speed = 1100 - (speedSlider.value * 100); // Convert speed value to delay
-                
-                order.forEach((nodeIndex, i) => {
-                    currentAnimation = setTimeout(() => {
-                        if (!isPlaying) return;
-                        
-                        // Remove current from all nodes
-                        nodes.forEach(node => node.classList.remove('current', 'animated'));
-                        
-                        // Add current to the current node
-                        nodes[nodeIndex].classList.add('current', 'animated');
-                        
-                        // Highlight the path to this node
-                        highlightPathToNode(nodeIndex);
-                        
-                        // After a short time, mark as visited
-                        setTimeout(() => {
-                            if (!isPlaying) return;
-                            nodes[nodeIndex].classList.remove('current');
-                            nodes[nodeIndex].classList.add('visited');
-                            
-                            // If this is the last node, end the animation
-                            if (i === order.length - 1) {
-                                isPlaying = false;
-                                statusElement.textContent = `${algorithmName} traversal completed!`;
+                let tree;
+                if (treeType === 'balanced') {
+                    tree = {
+                        value: 1,
+                        left: {
+                            value: 2,
+                            left: { value: 4, left: null, right: null },
+                            right: { value: 5, left: null, right: null }
+                        },
+                        right: {
+                            value: 3,
+                            left: { value: 6, left: null, right: null },
+                            right: { value: 7, left: null, right: null }
+                        }
+                    };
+                } else {
+                    tree = {
+                        value: 1,
+                        left: {
+                            value: 2,
+                            left: { value: 4, left: null, right: null },
+                            right: null
+                        },
+                        right: {
+                            value: 3,
+                            left: null,
+                            right: {
+                                value: 5,
+                                left: null,
+                                right: { value: 6, left: null, right: null }
                             }
-                        }, speed / 2);
-                    }, i * speed);
+                        }
+                    };
+                }
+                
+                // Generate traversal steps
+                steps = [];
+                traversalOrder = [];
+                
+                if (traversalType === 'inorder') {
+                    inorderTraversal(tree);
+                } else if (traversalType === 'preorder') {
+                    preorderTraversal(tree);
+                } else {
+                    postorderTraversal(tree);
+                }
+                
+                // Render tree
+                renderTree(tree);
+                
+                // Enable controls
+                prevStep.disabled = false;
+                nextStep.disabled = false;
+                reset.disabled = false;
+                
+                // Update explanation
+                explanationText.textContent = `Binary Tree ${traversalType} traversal. Click Next Step to see the algorithm in action.`;
+                
+                // Show first step
+                currentStep = 0;
+                updateVisualization();
+                status.textContent = `Tree generated! Step ${currentStep + 1} of ${steps.length}. Use Next Step to continue.`;
+            }
+            
+            function inorderTraversal(node) {
+                if (!node) return;
+                
+                inorderTraversal(node.left);
+                steps.push({
+                    type: 'visit',
+                    node: node.value,
+                    explanation: `Visiting node ${node.value} (inorder traversal)`
+                });
+                traversalOrder.push(node.value);
+                inorderTraversal(node.right);
+            }
+            
+            function preorderTraversal(node) {
+                if (!node) return;
+                
+                steps.push({
+                    type: 'visit',
+                    node: node.value,
+                    explanation: `Visiting node ${node.value} (preorder traversal)`
+                });
+                traversalOrder.push(node.value);
+                preorderTraversal(node.left);
+                preorderTraversal(node.right);
+            }
+            
+            function postorderTraversal(node) {
+                if (!node) return;
+                
+                postorderTraversal(node.left);
+                postorderTraversal(node.right);
+                steps.push({
+                    type: 'visit',
+                    node: node.value,
+                    explanation: `Visiting node ${node.value} (postorder traversal)`
+                });
+                traversalOrder.push(node.value);
+            }
+            
+            function renderTree(tree) {
+                canvas.innerHTML = '';
+                
+                // Calculate node positions
+                const positions = calculateTreePositions(tree);
+                
+                // Draw edges
+                drawTreeEdges(tree, positions);
+                
+                // Draw nodes
+                for (const [nodeId, pos] of Object.entries(positions)) {
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'node';
+                    nodeElement.id = `node-${nodeId}`;
+                    nodeElement.textContent = nodeId;
+                    nodeElement.style.left = `${pos.x}px`;
+                    nodeElement.style.top = `${pos.y}px`;
+                    canvas.appendChild(nodeElement);
+                }
+            }
+            
+            function calculateTreePositions(tree) {
+                const positions = {};
+                const levelHeight = 80;
+                const nodeSpacing = 70;
+                
+                function calculate(node, level, offset) {
+                    if (!node) return offset;
+                    
+                    const leftOffset = calculate(node.left, level + 1, offset);
+                    const x = leftOffset * nodeSpacing + 50;
+                    const y = level * levelHeight + 50;
+                    
+                    positions[node.value] = { x, y };
+                    
+                    const rightOffset = calculate(node.right, level + 1, leftOffset + 1);
+                    return rightOffset;
+                }
+                
+                calculate(tree, 0, 0);
+                return positions;
+            }
+            
+            function drawTreeEdges(tree, positions) {
+                function draw(node) {
+                    if (!node) return;
+                    
+                    if (node.left) {
+                        drawEdge(positions[node.value], positions[node.left.value]);
+                        draw(node.left);
+                    }
+                    
+                    if (node.right) {
+                        drawEdge(positions[node.value], positions[node.right.value]);
+                        draw(node.right);
+                    }
+                }
+                
+                draw(tree);
+            }
+            
+            function drawEdge(from, to) {
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                const edge = document.createElement('div');
+                edge.className = 'edge';
+                edge.style.width = `${length}px`;
+                edge.style.left = `${from.x}px`;
+                edge.style.top = `${from.y}px`;
+                edge.style.transform = `rotate(${angle}deg)`;
+                canvas.appendChild(edge);
+            }
+            
+            // Dijkstra visualization functions
+            function generateGraphVisualization() {
+                resetVisualization();
+                status.textContent = 'Generating graph visualization...';
+                
+                // Generate graph based on selection
+                const graphType = document.getElementById('graphType').value;
+                const startNode = document.getElementById('startNode').value;
+                
+                let graph;
+                if (graphType === 'simple') {
+                    graph = {
+                        nodes: [
+                            { id: 'A', x: 100, y: 100 },
+                            { id: 'B', x: 250, y: 100 },
+                            { id: 'C', x: 100, y: 250 },
+                            { id: 'D', x: 250, y: 250 }
+                        ],
+                        edges: [
+                            { from: 'A', to: 'B', weight: 4 },
+                            { from: 'A', to: 'C', weight: 2 },
+                            { from: 'B', to: 'D', weight: 5 },
+                            { from: 'C', to: 'D', weight: 1 }
+                        ]
+                    };
+                } else {
+                    graph = {
+                        nodes: [
+                            { id: 'A', x: 100, y: 100 },
+                            { id: 'B', x: 250, y: 50 },
+                            { id: 'C', x: 400, y: 100 },
+                            { id: 'D', x: 250, y: 200 },
+                            { id: 'E', x: 400, y: 250 }
+                        ],
+                        edges: [
+                            { from: 'A', to: 'B', weight: 3 },
+                            { from: 'A', to: 'D', weight: 7 },
+                            { from: 'B', to: 'C', weight: 2 },
+                            { from: 'B', to: 'D', weight: 1 },
+                            { from: 'C', to: 'E', weight: 5 },
+                            { from: 'D', to: 'C', weight: 2 },
+                            { from: 'D', to: 'E', weight: 3 }
+                        ]
+                    };
+                }
+                
+                // Generate Dijkstra steps
+                steps = generateDijkstraSteps(graph, startNode);
+                
+                // Render graph
+                renderGraph(graph);
+                
+                // Enable controls
+                prevStep.disabled = false;
+                nextStep.disabled = false;
+                reset.disabled = false;
+                
+                // Update explanation
+                explanationText.textContent = "Dijkstra's Algorithm: Finding shortest paths. Click Next Step to see the algorithm in action.";
+                
+                // Show first step
+                currentStep = 0;
+                updateVisualization();
+                status.textContent = `Graph generated! Step ${currentStep + 1} of ${steps.length}. Use Next Step to continue.`;
+            }
+            
+            function generateDijkstraSteps(graph, start) {
+                const steps = [];
+                const distances = {};
+                const visited = {};
+                
+                // Initialize
+                graph.nodes.forEach(node => {
+                    distances[node.id] = (node.id === start) ? 0 : Infinity;
+                    visited[node.id] = false;
+                });
+                
+                steps.push({
+                    type: 'init',
+                    distances: {...distances},
+                    current: start,
+                    explanation: `Initializing distances. Start node ${start} has distance 0.`
+                });
+                
+                // Main algorithm
+                for (let i = 0; i < graph.nodes.length; i++) {
+                    // Find unvisited node with smallest distance
+                    let current = null;
+                    for (const node of graph.nodes) {
+                        if (!visited[node.id] && (current === null || distances[node.id] < distances[current])) {
+                            current = node.id;
+                        }
+                    }
+                    
+                    if (current === null || distances[current] === Infinity) break;
+                    
+                    visited[current] = true;
+                    
+                    steps.push({
+                        type: 'visit',
+                        current: current,
+                        distances: {...distances},
+                        explanation: `Visiting node ${current} with distance ${distances[current]}.`
+                    });
+                    
+                    // Update neighbors
+                    for (const edge of graph.edges) {
+                        if (edge.from === current && !visited[edge.to]) {
+                            const newDist = distances[current] + edge.weight;
+                            if (newDist < distances[edge.to]) {
+                                distances[edge.to] = newDist;
+                                
+                                steps.push({
+                                    type: 'update',
+                                    current: current,
+                                    neighbor: edge.to,
+                                    newDistance: newDist,
+                                    edge: edge,
+                                    distances: {...distances},
+                                    explanation: `Updating distance to ${edge.to} via ${current}. New distance: ${newDist}.`
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                steps.push({
+                    type: 'complete',
+                    distances: {...distances},
+                    explanation: `Algorithm complete. Shortest paths from ${start} calculated.`
+                });
+                
+                return steps;
+            }
+            
+            function renderGraph(graph) {
+                canvas.innerHTML = '';
+                
+                // Draw edges
+                graph.edges.forEach(edge => {
+                    const fromNode = graph.nodes.find(n => n.id === edge.from);
+                    const toNode = graph.nodes.find(n => n.id === edge.to);
+                    
+                    if (fromNode && toNode) {
+                        drawGraphEdge(fromNode, toNode, edge.weight);
+                    }
+                });
+                
+                // Draw nodes
+                graph.nodes.forEach(node => {
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'dijkstra-node';
+                    nodeElement.id = `node-${node.id}`;
+                    nodeElement.innerHTML = `
+                        <div class="label">${node.id}</div>
+                        <div class="distance" id="dist-${node.id}">∞</div>
+                    `;
+                    nodeElement.style.left = `${node.x}px`;
+                    nodeElement.style.top = `${node.y}px`;
+                    canvas.appendChild(nodeElement);
                 });
             }
             
-            function highlightPathToNode(nodeIndex) {
-                // Simple path highlighting based on node index
-                // In a real implementation, this would trace the actual path
-                if (nodeIndex === 0) return;
+            function drawGraphEdge(from, to, weight) {
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
                 
-                let parentIndex = Math.floor((nodeIndex - 1) / 2);
-                const path = [nodeIndex];
+                const edge = document.createElement('div');
+                edge.className = 'dijkstra-edge';
+                edge.id = `edge-${from.id}-${to.id}`;
+                edge.style.width = `${length}px`;
+                edge.style.left = `${from.x}px`;
+                edge.style.top = `${from.y}px`;
+                edge.style.transform = `rotate(${angle}deg)`;
+                canvas.appendChild(edge);
                 
-                while (parentIndex >= 0) {
-                    path.unshift(parentIndex);
-                    if (parentIndex === 0) break;
-                    parentIndex = Math.floor((parentIndex - 1) / 2);
+                // Add weight label
+                const weightEl = document.createElement('div');
+                weightEl.className = 'weight';
+                weightEl.textContent = weight;
+                weightEl.style.left = `${from.x + dx/2 - 10}px`;
+                weightEl.style.top = `${from.y + dy/2 - 10}px`;
+                canvas.appendChild(weightEl);
+            }
+            
+            // Update visualization based on current step
+            function updateVisualization() {
+                if (steps.length === 0) return;
+                
+                const step = steps[currentStep];
+                explanationText.textContent = step.explanation;
+                
+                if (currentAlgorithm === 'tree') {
+                    updateTreeVisualization(step);
+                } else {
+                    updateGraphVisualization(step);
                 }
                 
-                // Highlight the path
-                path.forEach(index => {
-                    nodes[index].classList.add('path');
+                updateTraversalOrder();
+            }
+            
+            function updateTreeVisualization(step) {
+                // Reset all nodes
+                document.querySelectorAll('.node').forEach(node => {
+                    node.classList.remove('visited', 'current');
                 });
                 
-                // Highlight connecting lines
-                const lines = document.querySelectorAll('.node-line');
-                lines.forEach(line => {
-                    line.style.background = 'rgba(255, 255, 255, 0.3)';
-                });
-                
-                // Simple line highlighting based on node position
-                if (nodeIndex === 1 || nodeIndex === 3 || nodeIndex === 4) {
-                    lines[0].style.background = '#2ecc71';
+                // Mark visited nodes
+                for (let i = 0; i < currentStep; i++) {
+                    const visitedNode = document.getElementById(`node-${steps[i].node}`);
+                    if (visitedNode) {
+                        visitedNode.classList.add('visited');
+                    }
                 }
                 
-                if (nodeIndex === 2 || nodeIndex === 5 || nodeIndex === 6) {
-                    lines[1].style.background = '#2ecc71';
+                // Highlight current node
+                const currentNode = document.getElementById(`node-${step.node}`);
+                if (currentNode) {
+                    currentNode.classList.add('current');
                 }
             }
             
-            // Initialize with a simple tree
-            generateNewTree();
+            function updateGraphVisualization(step) {
+                // Reset all nodes and edges
+                document.querySelectorAll('.dijkstra-node').forEach(node => {
+                    node.classList.remove('visited', 'current');
+                });
+                
+                document.querySelectorAll('.dijkstra-edge').forEach(edge => {
+                    edge.classList.remove('highlighted');
+                });
+                
+                // Update distances
+                if (step.distances) {
+                    for (const [nodeId, dist] of Object.entries(step.distances)) {
+                        const distEl = document.getElementById(`dist-${nodeId}`);
+                        if (distEl) {
+                            distEl.textContent = dist === Infinity ? '∞' : dist;
+                        }
+                    }
+                }
+                
+                // Mark visited nodes
+                for (let i = 0; i <= currentStep; i++) {
+                    const s = steps[i];
+                    if (s.type === 'visit') {
+                        const visitedNode = document.getElementById(`node-${s.current}`);
+                        if (visitedNode) {
+                            visitedNode.classList.add('visited');
+                        }
+                    }
+                    
+                    // Highlight updated edges
+                    if (s.type === 'update') {
+                        const edge = document.getElementById(`edge-${s.current}-${s.neighbor}`);
+                        if (edge) {
+                            edge.classList.add('highlighted');
+                        }
+                    }
+                }
+                
+                // Highlight current node
+                if (step.current) {
+                    const currentNode = document.getElementById(`node-${step.current}`);
+                    if (currentNode) {
+                        currentNode.classList.add('current');
+                    }
+                }
+            }
+            
+            function updateTraversalOrder() {
+                traversalOrderContainer.innerHTML = '';
+                
+                if (currentAlgorithm === 'tree' && traversalOrder.length > 0) {
+                    traversalOrder.forEach((value, index) => {
+                        const node = document.createElement('div');
+                        node.className = 'order-node';
+                        if (index < currentStep) {
+                            node.classList.add('visited');
+                        } else if (index === currentStep) {
+                            node.classList.add('current');
+                        }
+                        node.textContent = value;
+                        traversalOrderContainer.appendChild(node);
+                    });
+                }
+            }
+            
+            function resetVisualization() {
+                currentStep = 0;
+                steps = [];
+                traversalOrder = [];
+                canvas.innerHTML = '';
+                traversalOrderContainer.innerHTML = '';
+                explanationText.textContent = 'Select an algorithm and click generate to start visualization.';
+                prevStep.disabled = true;
+                nextStep.disabled = true;
+                reset.disabled = true;
+                status.textContent = 'Visualization reset. Ready to generate new visualization.';
+            }
+            
+            // Initialize
+            resetVisualization();
         });
     </script>
 </body>
